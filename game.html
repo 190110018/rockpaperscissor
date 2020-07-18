@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rock Paper Scissors</title>
+    <link  rel="stylesheet" href ="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+</head>
+<style type="text/css">
+    :root{
+    --primary-color:#003699;
+    --dark-color:#333333;
+    --light-color:#f4f4f4;
+    --lose-color:#dc3545;
+    --win-color:#28a745;
+    --modal-duration:1s;
+}
+*{
+    box-sizing: border-box;
+    margin:0;
+    border:0;
+}
+body{
+    line-height:1.6;
+    background: #e9d362;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #333333, #e9d362);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #333333, #e9d362); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+
+}
+.container{
+    max-width: 1100px;
+    margin:auto;
+    overflow:hidden;
+    padding:1rem ;
+    text-align: center;
+}
+.restart-btn{
+    display: none;
+    background: var(--light-color);
+    color:#333;
+    font-size: 1rem;
+    cursor:pointer;
+    outline: none;
+    border: none;
+    margin-bottom: 10px;
+
+}
+.restart-btn:hover{
+    background: var(--dark-color);
+    color: aliceblue;
+}
+.header{
+    text-align: center;
+    margin:1rem 0;
+
+}
+.score{
+    display:grid;
+    grid-template-columns: repeat(2,1fr);
+    font-size:1.2rem;
+    color: white;
+}
+.score p:first-child{
+    background: var(--primary-color);
+    
+}
+.score p:last-child{
+    background: var(--dark-color);
+    
+}
+.choices{
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-gap:2rem;
+    margin: 2rem;
+    text-align: center;
+}
+.choice{
+    cursor: pointer;;
+}
+.choice:hover{
+    color:var(--primary-color);
+}
+.text-win{
+    color: var(--win-color);
+}
+.text-lose{
+    color: var(--lose-color);
+}
+@media(max-width:700px){
+    .choice{
+        font-size: 110px;
+    }
+}
+/* Modal class */
+.modal{
+    display:none;
+    position: fixed;
+    z-index:1;
+    left:0;
+    top:0;
+    height: 100%;
+    width: 100%;
+    overflow:auto;
+    background: rgba(0,0,0,0.5);
+}
+.modal-content{
+    background: white;
+    text-align:center;
+    margin: 10% auto;
+    width:350px;
+    animation-name:modalopen;
+    animation-duration: var(--modal-duration);
+    border-radius: 10px;
+}
+@keyframes modalopen{
+    from{
+        opacity:0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+</style>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Rock Paper Scisssor</h1>
+           
+            <button id="restart" class="restart-btn">Restart Game</button>
+            <div id="score" class="score">
+                <p>Player:0</p>
+                <p>Computer:0</p>
+            </div>
+        </header>
+        <h2>Make Your Selection</h2>
+        <div class="choices">
+            <i class="fas fa-hand-rock choice fa-10x" id="rock" ></i>
+            <i class="fas fa-hand-paper choice fa-10x" id="paper" ></i>
+            <i class="fas fa-hand-scissors choice fa-10x" id="scissors" ></i>
+        </div>
+    </div>
+
+<div class="modal">
+    <div id="result" class="modal-content">
+
+        <h1 class="text-win">You Win</h1>
+        <i class="fas fa-hand-rock  fa-10x"></i>
+        <p>Computer Chose Rock</p>
+    </div>
+</div>
+<script>
+    const choices =document.querySelectorAll('.choice');
+    const score=document.getElementById('score');
+    const result=document.getElementById('result');
+    const restart=document.getElementById('restart');
+    const modal =document.querySelector('.modal');
+    scoreboard={
+        player:0,
+        computer:0
+    };
+
+    // play game
+    function play(e){
+        restart.style.display='inline-block';
+        const playerChoice= e.target.id;
+        const computerChoice = getComputerChoice();
+        const winner = getWinner(playerChoice,computerChoice);
+        showWinner(winner,computerChoice);
+    }
+    // Get Computers choice
+    function getComputerChoice(){
+        const rand=Math.random();
+        if(rand<0.34){
+            return 'rock';
+        }
+        else if(rand<=0.67){
+            return 'paper';
+        }else
+        {
+            return 'scissors';
+        }
+    }
+    // Get Winner
+    function getWinner(p,c){
+        if(p===c){
+            return 'draw';
+        }
+        else if(p==='rock'){
+            if(c==='paper'){
+                return 'computer';
+            }
+                else{
+                    return 'player';
+                }
+            }
+        
+        else if(p==='paper'){
+            if(c==='rock'){
+                return 'player';
+            }
+                else{
+                    return 'computer';
+                }
+            }
+        
+        else if(p==='scissors'){
+            if(c==='rock'){
+                return 'computer';
+            }
+                else{
+                    return 'player';
+                }
+            }
+        
+    }
+    function showWinner(winner,computerChoice){
+        if(winner==='player'){
+            // INcrement player score
+            scoreboard.player++;
+            
+            // Show modal result
+            result.innerHTML=`
+            <h1 class="text-win">You Win</h1>
+            <i class="fas fa-hand-${computerChoice} fa-10x"></i>
+            <p>Computer Chose <strong>${computerChoice.charAt(0).toUpperCase() + computerChoice.slice(1)}</strong></p> 
+            `;
+          
+        }else if(winner==='computer'){
+            // Increment computer score
+            scoreboard.computer++;
+            // Show modal result
+            result.innerHTML=`
+            <h1 class="text-lose">You Lose</h1>
+            <i class="fas fa-hand-${computerChoice} fa-10x"></i>
+            <p>Computer Chose <strong>${computerChoice.charAt(0).toUpperCase() + computerChoice.slice(1)}</strong></p>
+            `;
+        }else{
+            result.innerHTML=`
+            <h1>Its a Draw</h1>
+            <i class="fas fa-hand-${computerChoice} fa-10x"></i>
+            <p>Computer Chose <strong>${computerChoice.charAt(0).toUpperCase() + computerChoice.slice(1)}</strong></p>
+            `;
+        }
+        // Show Score
+        score.innerHTML=`
+        <p>Player:${scoreboard.player}</p>
+        <p>Computer:${scoreboard.computer}</p>
+        `;
+        modal.style.display='block';
+
+    }
+    // Clear Modal
+    function clearModal(e){
+        if(e.target==modal){
+            modal.style.display='none';
+        }
+    }
+    function restartGame(e){
+        restart.style.display='none';
+        scoreboard.player=0;
+        scoreboard.computer=0;
+        score.innerHTML=`
+        <p>Player:${scoreboard.player}</p>
+        <p>Computer:${scoreboard.computer}</p>
+        `;
+    }
+    // Event listener
+    choices.forEach(function(choice){
+        choice.addEventListener('click',play);
+
+    });
+    window.addEventListener('click',clearModal);
+    restart.addEventListener('click',restartGame);
+    
+</script>
+</body>
+</html>
